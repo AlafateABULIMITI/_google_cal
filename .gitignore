@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# private files
+.vscode
+credentials.json
+token.pickle
+.DS_Store
