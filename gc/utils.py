@@ -2,10 +2,15 @@ import pandas as pd
 import datetime
 from event import Event
 from connect import connect
+from pprint import pprint
+from operator import itemgetter
+import matplotlib.pyplot as plt
 
 
 def get_df(service, maxResults):
-    df = pd.DataFrame(columns=["id", "name", "start", "end", "updated", "span"])
+    df = pd.DataFrame(
+        columns=["id", "name", "start", "end", "updated", "span"], index=["id"]
+    )
     now = datetime.datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
     print(f"Getting the upcoming {maxResults} events")
     events_result = (
@@ -50,7 +55,35 @@ def get_df(service, maxResults):
     return df
 
 
+def report(df, attr):
+    report = dict()
+    df_group = df.groupby(df[attr])
+    for key, value in df_group:
+        report[key] = sum(value["span"])
+    report = {
+        k: v for k, v in sorted(report.items(), key=lambda item: item[1], reverse=True)
+    }
+    return report
+
+
+def get_pie(report, topn=5):
+    labels = list(report.keys())[:topn]
+    x = list(report.values())[:topn]
+    plt.pie(
+        x,
+        labels=labels,
+        autopct="%.0f%%",
+        textprops={"fontsize": 15, "color": "k"},
+        shadow=True,
+    )
+    plt.axis("equal")
+    plt.show()
+
+
 if __name__ == "__main__":
     service = connect()
     df = get_df(service, 40)
     print(df)
+    report = report(df, "name")
+    print(report)
+    get_pie(report)
