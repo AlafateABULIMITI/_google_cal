@@ -70,13 +70,11 @@ def get_pie(report, topn=5):
     labels = list(report.keys())[:topn]
     x = list(report.values())[:topn]
     plt.pie(
-        x,
-        labels=labels,
-        autopct="%.0f%%",
-        textprops={"fontsize": 15, "color": "k"},
-        shadow=True,
+        x, labels=labels, autopct="%.0f%%", textprops={"fontsize": 15, "color": "k"}
     )
     plt.axis("equal")
+    now = datetime.datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
+    plt.savefig(f"../images/pie_{now}_topn_{topn}.png")
     plt.show()
 
 
@@ -86,4 +84,4 @@ if __name__ == "__main__":
     print(df)
     report = report(df, "name")
     print(report)
-    get_pie(report)
+    get_pie(report, 6)
